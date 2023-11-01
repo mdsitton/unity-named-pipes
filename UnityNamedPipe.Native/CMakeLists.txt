@@ -18,8 +18,10 @@ if(UNIX)
     set(BASE_SRC ${BASE_SRC} "connection_unix.cpp")
 endif(UNIX)
 
-add_library(NativeNamedPipe STATIC ${BASE_SRC})
+add_library(NativeNamedPipe-static STATIC ${BASE_SRC})
+target_include_directories(NativeNamedPipe-static PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+add_library(NativeNamedPipe SHARED ${BASE_SRC})
 target_include_directories(NativeNamedPipe PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (APPLE)
