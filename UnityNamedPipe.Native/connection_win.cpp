@@ -121,7 +121,7 @@ public:
 			else
 			{
 				// Attempt to open it again
-				return open(pipename);
+				return Open(pipename);
 			}
 		}
 
@@ -133,7 +133,7 @@ public:
 	{
 		WIN32_FIND_DATA fileData;
 		HANDLE file = FindFirstFileA(pipename, &fileData);
-		if (hFind != INVALID_HANDLE_VALUE)
+		if (file != INVALID_HANDLE_VALUE)
 		{
 			FindClose(file);
 			return true;

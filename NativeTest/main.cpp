@@ -4,21 +4,29 @@
 #include <fmt/format.h>
 #include <cstdlib>
 #include <thread>
-
+#if defined(_WIN32)
+std::string paths[] = {"discord-ipc-"};
+#else
 std::string paths[] = {
-    "discord-ipc-",
-    "app/com.discordapp.Discord/discord-ipc-",
-    "snap.discord-canary/discord-ipc-",
-    "snap.discord/discord-ipc-"};
+    "/discord-ipc-",
+    "/app/com.discordapp.Discord/discord-ipc-",
+    "/snap.discord-canary/discord-ipc-",
+    "/snap.discord/discord-ipc-"};
+#endif
 
-static const char *get_temp_path()
+static const char *
+get_temp_path()
 {
+#if defined(_WIN32)
+    return "\\\\.\\pipe\\";
+#else
     const char *temp = std::getenv("XDG_RUNTIME_DIR");
     temp = temp ? temp : std::getenv("TMPDIR");
     temp = temp ? temp : std::getenv("TMP");
     temp = temp ? temp : std::getenv("TEMP");
     temp = temp ? temp : "/tmp";
     return temp;
+#endif
 }
 
 int main()
@@ -35,7 +43,7 @@ int main()
             {
                 for (int j = 0; j < 10; ++j)
                 {
-                    std::string fmtPath = fmt::format("{}/{}{}", get_temp_path(), paths[i], j);
+                    std::string fmtPath = fmt::format("{}{}{}", get_temp_path(), paths[i], j);
                     fmt::println("Checking path: {}", fmtPath);
                     if (!Exists(client, fmtPath.c_str()))
                     {
