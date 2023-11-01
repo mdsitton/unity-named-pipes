@@ -101,8 +101,16 @@ namespace Lachee.IO
         /// <param name="name">The name of the pipe</param>
         public void Connect()
         {
+            // Don't bother trying to open the pipe if it doesn't exist
+            if (!Native.Exists(ptr, PipeName))
+            {
+                throw new NamedPipeOpenException(code);
+            }
             int code = Native.Open(ptr, PipeName);
-            if (!IsConnected)  throw new NamedPipeOpenException(code);
+            if (!IsConnected) 
+            {
+                throw new NamedPipeOpenException(code);
+            }
             
         }
 
@@ -235,32 +243,35 @@ namespace Lachee.IO
             const string LIBRARY_NAME = "NativeNamedPipe";
 
             #region Creation and Destruction
-            [DllImport(LIBRARY_NAME, EntryPoint = "createClient", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(LIBRARY_NAME, EntryPoint = "CreateClient", CallingConvention = CallingConvention.Cdecl)]
             public static extern IntPtr CreateClient();
 
-            [DllImport(LIBRARY_NAME, EntryPoint = "destroyClient", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(LIBRARY_NAME, EntryPoint = "DestroyClient", CallingConvention = CallingConvention.Cdecl)]
             public static extern void DestroyClient(IntPtr client);
             #endregion
 
             #region State Control
 
-            [DllImport(LIBRARY_NAME, EntryPoint = "isConnected", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(LIBRARY_NAME, EntryPoint = "IsConnected", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
             public static extern bool IsConnected([MarshalAs(UnmanagedType.SysInt)] IntPtr client);
 
-            [DllImport(LIBRARY_NAME, EntryPoint = "open", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(LIBRARY_NAME, EntryPoint = "Open", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
             public static extern int Open(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string pipename);
 
-            [DllImport(LIBRARY_NAME, EntryPoint = "close", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(LIBRARY_NAME, EntryPoint = "Exists", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+            public static extern int Exists(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string pipename);
+
+            [DllImport(LIBRARY_NAME, EntryPoint = "Close", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
             public static extern void Close(IntPtr client);
 
             #endregion
 
             #region IO
             
-            [DllImport(LIBRARY_NAME, EntryPoint = "readFrame", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(LIBRARY_NAME, EntryPoint = "ReadFrame", CallingConvention = CallingConvention.Cdecl)]
             public static extern int ReadFrame(IntPtr client, IntPtr buffer, int length);
 
-            [DllImport(LIBRARY_NAME, EntryPoint = "writeFrame", CallingConvention = CallingConvention.Cdecl)]
+            [DllImport(LIBRARY_NAME, EntryPoint = "WriteFrame", CallingConvention = CallingConvention.Cdecl)]
             public static extern int WriteFrame(IntPtr client, IntPtr buffer, int length);
 
             #endregion

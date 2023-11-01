@@ -2,25 +2,25 @@
 //
 
 #include "NativeNamedPipe.h"
+extern "C" NATIVEPIPE_API BaseNamedPipeClient *CreateClient() { return BaseNamedPipeClient::Create(); }
 
-extern "C" NATIVEPIPE_API BaseNamedPipeClient* createClient() { return BaseNamedPipeClient::create(); }
-
-extern "C" NATIVEPIPE_API void destroyClient(BaseNamedPipeClient* client)
+extern "C" NATIVEPIPE_API void DestroyClient(BaseNamedPipeClient *client)
 {
-	if (client != NULL) 
+	if (client != NULL)
 	{
-		//close the client
-		if (client->isConnected())
-			client->close();
+		// close the client
+		client->Close();
 
-		//delete and nullify the client
+		// delete and nullify the client
 		delete client;
 		client = NULL;
 	}
 }
 
-extern "C" NATIVEPIPE_API bool isConnected(BaseNamedPipeClient* client) { return client->isConnected(); }
-extern "C" NATIVEPIPE_API int readFrame(BaseNamedPipeClient* client, unsigned char* buffer, int length) { return client->readFrame(buffer, length); }
-extern "C" NATIVEPIPE_API int writeFrame(BaseNamedPipeClient* client, unsigned char* buffer, int length) { return client->writeFrame(buffer, length); }
-extern "C" NATIVEPIPE_API int open(BaseNamedPipeClient* client, char* pipename) { return client->open(pipename); }
-extern "C" NATIVEPIPE_API void close(BaseNamedPipeClient* client) { client->close(); }
+extern "C" NATIVEPIPE_API bool IsConnected(BaseNamedPipeClient *client) { return client->IsConnected(); }
+extern "C" NATIVEPIPE_API int ReadFrame(BaseNamedPipeClient *client, unsigned char *buffer, int length) { return client->ReadFrame(buffer, length); }
+extern "C" NATIVEPIPE_API int WriteFrame(BaseNamedPipeClient *client, unsigned char *buffer, int length) { return client->WriteFrame(buffer, length); }
+extern "C" NATIVEPIPE_API int Open(BaseNamedPipeClient *client, const char *pipename) { return client->Open(pipename); }
+
+extern "C" NATIVEPIPE_API bool Exists(BaseNamedPipeClient *client, const char *pipename) { return client->Exists(pipename); }
+extern "C" NATIVEPIPE_API void Close(BaseNamedPipeClient *client) { client->Close(); }

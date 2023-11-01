@@ -1,14 +1,15 @@
 class BaseNamedPipeClient
 {
 public:
-	static BaseNamedPipeClient* create();
+	static BaseNamedPipeClient *Create();
 
 	virtual ~BaseNamedPipeClient() = default;
 
-	virtual bool isConnected() = 0;
-	virtual int readFrame(unsigned char* buffer, int length) = 0;
-	virtual int writeFrame(unsigned char* buffer, int length) = 0;
+	virtual bool IsConnected() = 0;
+	virtual int ReadFrame(unsigned char *buffer, int length) = 0;
+	virtual int WriteFrame(unsigned char *buffer, int length) = 0;
 
-	virtual int open(char* pipename) = 0;
-	virtual void close(void) = 0;
+	virtual int Open(const char *pipename) = 0;
+	virtual bool Exists(const char *pipename) = 0;
+	virtual void Close(void) = 0;
 };

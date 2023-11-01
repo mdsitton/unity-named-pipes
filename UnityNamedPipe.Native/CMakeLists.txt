@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for NativeNamedPipe, include source and define
 # project specific logic here.
 #
-cmake_minimum_required (VERSION 3.5)
+cmake_minimum_required (VERSION 3.24)
 
 # Add source to this project's executable.
 set(BASE_SRC "NativeNamedPipe.cpp" "NativeNamedPipe.h" "connection.h")
@@ -18,10 +18,9 @@ if(UNIX)
     set(BASE_SRC ${BASE_SRC} "connection_unix.cpp")
 endif(UNIX)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+add_library(NativeNamedPipe STATIC ${BASE_SRC})
 
-add_library(NativeNamedPipe SHARED ${BASE_SRC})
+target_include_directories(NativeNamedPipe PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (APPLE)
     target_link_libraries(NativeNamedPipe PRIVATE "-framework AppKit")
