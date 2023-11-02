@@ -9,7 +9,6 @@
 #include <sys/stat.h>
 #include <sys/un.h>
 #include <unistd.h>
-#include <iostream>
 
 #ifdef MSG_NOSIGNAL
 static int MsgFlags = MSG_NOSIGNAL;
@@ -67,7 +66,6 @@ public:
 
 	int Open(const char *pipename) override
 	{
-		std::cout << "Open socket" << std::endl;
 		sockaddr_un addr;
 		addr.sun_family = AF_UNIX;
 
@@ -75,7 +73,6 @@ public:
 		sock = socket(AF_UNIX, SOCK_STREAM, 0);
 		if (sock < 0)
 			return errno;
-		std::cout << "Set non blocking" << std::endl;
 
 		// Yes.. do what this does
 		fcntl(sock, F_SETFL, O_NONBLOCK);
@@ -85,15 +82,12 @@ public:
 		setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, &optval, sizeof(optval));
 #endif
 
-		std::cout << "format path" << std::endl;
-
 		// Update the address
 		snprintf(addr.sun_path, sizeof(addr.sun_path), "%s", pipename);
-		std::cout << "connect path" << std::endl;
 		int response = connect(sock, (const sockaddr *)&addr, sizeof(addr));
 		if (response < 0)
 		{
-			std::cout << "failed to connect to path" << std::endl;
+
 			// Prepare the error code (to return later) and close the connect
 			int errorcode = errno * 1000;
 			Close();
@@ -119,14 +113,12 @@ public:
 
 	void Close(void) override
 	{
-		std::cout << "closing socket " << sock << std::endl;
 		if (sock != -1)
 		{
 			close(sock);
 		}
 		sock = -1;
 		isOpened = false;
-		std::cout << "Finished with socket" << std::endl;
 	}
 
 private:

@@ -44,7 +44,7 @@ namespace Lachee.IO
         /// The pipe name for this client.
         /// </summary>
         public string PipeName { get; }
-        
+
         /// <summary>Prefix to prepend to all pipe names.</summary>
         private static readonly string s_pipePrefix = Path.Combine(Path.GetTempPath(), "CoreFxPipe_");
 
@@ -60,7 +60,7 @@ namespace Lachee.IO
             PipeName = FormatPipe(server, pipeName);
             Console.WriteLine("Created new NamedPipeClientStream '{0}' => '{1}'", pipeName, PipeName);
         }
-        
+
         ~NamedPipeClientStream()
         {
             Dispose(false);
@@ -104,14 +104,13 @@ namespace Lachee.IO
             // Don't bother trying to open the pipe if it doesn't exist
             if (!Native.Exists(ptr, PipeName))
             {
-                throw new NamedPipeOpenException(code);
+                throw new FileNotFoundException();
             }
             int code = Native.Open(ptr, PipeName);
-            if (!IsConnected) 
+            if (!IsConnected)
             {
                 throw new NamedPipeOpenException(code);
             }
-            
         }
 
         /// <summary>
@@ -197,7 +196,7 @@ namespace Lachee.IO
 
                 //Send the block
                 int result = Native.WriteFrame(ptr, buffptr, count);
-                if (result < 0) throw new NamedPipeWriteException(result);                
+                if (result < 0) throw new NamedPipeWriteException(result);
             }
             finally
             {
@@ -259,7 +258,7 @@ namespace Lachee.IO
             public static extern int Open(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string pipename);
 
             [DllImport(LIBRARY_NAME, EntryPoint = "Exists", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-            public static extern int Exists(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string pipename);
+            public static extern bool Exists(IntPtr client, [MarshalAs(UnmanagedType.LPStr)] string pipename);
 
             [DllImport(LIBRARY_NAME, EntryPoint = "Close", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
             public static extern void Close(IntPtr client);
@@ -267,7 +266,7 @@ namespace Lachee.IO
             #endregion
 
             #region IO
-            
+
             [DllImport(LIBRARY_NAME, EntryPoint = "ReadFrame", CallingConvention = CallingConvention.Cdecl)]
             public static extern int ReadFrame(IntPtr client, IntPtr buffer, int length);
 
